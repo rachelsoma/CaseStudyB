@@ -14,7 +14,7 @@ void tokenize(char *line, char **words, int *nwords);
 /* break line into words separated by whitespace, placing them in the 
 array words, and setting the count to nwords */
 
-int findAndExecute();
+int findAndExecute(char** words);
 
 int main()
 {
@@ -40,7 +40,7 @@ int main()
 		/* More to do here */
 		
 		if (strcmp(words[0],"run") == 0){
-			findAndExecute();
+			findAndExecute(*words[1]);
 			return 0;
 		} 
 
@@ -66,22 +66,26 @@ void tokenize(char *line, char **words, int *nwords)
 	return;
 }
 
-int findAndExecute(){
+int findAndExecute(char** words){
 	pid_t child;
+	int caseIn = -1;
+	if (strcmp(**words[1],"cd") == 0){
+	caseIn = 0;}
 	switch(child=fork())
 	{
-	case -1:
+	case caseIn:
 		perror("fork");
 		exit(1);
 		break;
-	case 0:
-		printf("I am the child my pid is: %d\n",getpid());
-		exit(0);
+	case caseIn:
+		printf("Change DIR. \nI am the child my pid is: %d\n",getpid());
+		return 1;
 		break;
 	default:
 		printf("I am the parent, my pid is %d,",getpid());
 		printf("and my childs is %d\n",child);
+		return 1;
 		break;
 	}
-	return 0;
+	return 1;
 }
