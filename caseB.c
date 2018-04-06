@@ -23,26 +23,27 @@ int main()
 
 	while(1)
 	{
-		printf("OSP CLI $ ");
+		printf("\nOSP CLI $ ");
 		
 		/* read a line of text here */
 		fgets(line,MAX_CHAR_LINE,stdin);
 		
-		printf("%s ", line);
+		//printf("%s ", line);
 		
 		tokenize(line,words,&nwords);
-		if (strcmp(words[0],"exit") == 0&&nwords==1){
-			printf("exiting \n");
-			return 0;
-		}
+		
 		
 		printf("Num words: %i \t\n",nwords);
 		/* More to do here */
 		
-		if (strcmp(words[0],"run") == 0){
-			findAndExecute(*words[1]);
-			return 0;
-		} 
+		if (strcmp(words[0],"exit") == 0&&nwords==1){
+			printf("exiting \n");
+			exit(0);
+		} else {
+			printf("else...");
+			findAndExecute(words);
+			
+		}
 
 	}
 	return 0;
@@ -67,25 +68,45 @@ void tokenize(char *line, char **words, int *nwords)
 }
 
 int findAndExecute(char** words){
+	
 	pid_t child;
-	int caseIn = -1;
-	if (strcmp(**words[1],"cd") == 0){
-	caseIn = 0;}
-	switch(child=fork())
-	{
-	case caseIn:
-		perror("fork");
-		exit(1);
-		break;
-	case caseIn:
-		printf("Change DIR. \nI am the child my pid is: %d\n",getpid());
-		return 1;
-		break;
-	default:
-		printf("I am the parent, my pid is %d,",getpid());
-		printf("and my childs is %d\n",child);
-		return 1;
-		break;
-	}
+	
+	//if (strcmp(words[0],"ls") == 0){
+		switch(child=fork())
+		{
+		case -1:
+			perror("fork");
+			exit(1);
+			break;
+		case 0:
+			printf("I am the child my pid is: %d\n",getpid());
+		/* 	return 1; */
+			break;
+		default:
+			printf("I am the parent, my pid is %d,",getpid());
+			printf("and my childs is %d\n",child);
+			execlp(words[0],words[0],NULL);
+			return 1;
+			break;
+		}
+	/* }
+	else {
+		switch(child=fork())
+		{
+		case -1:
+			perror("fork");
+			exit(1);
+			break;
+		case 0:
+			printf("I am the child my pid is: %d\n",getpid());
+			return 1;
+			break;
+		default:
+			printf("I am the parent, my pid is %d,",getpid());
+			printf("and my childs is %d\n",child);
+			return 1;
+			break;
+		}
+	} */
 	return 1;
 }
