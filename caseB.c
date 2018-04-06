@@ -86,6 +86,8 @@ int findAndExecute(char** words){
 		default:
 			printf("DEFAULT: I am the parent, my pid is %d,",getpid());
 			printf("and my child is %d\n",child);
+			int status;
+			wait(&status);
 		/* 	exit(0); */
 			/* return 1; */
 			break;
