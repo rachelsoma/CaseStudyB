@@ -79,14 +79,15 @@ int findAndExecute(char** words){
 			exit(1);
 			break;
 		case 0:
-			printf("I am the child my pid is: %d\n",getpid());
-		/* 	return 1; */
+			printf("CASE 0: I am the child my pid is: %d\n",getpid());
+			execlp(words[0],words[0],NULL);
+			
 			break;
 		default:
-			printf("I am the parent, my pid is %d,",getpid());
-			printf("and my childs is %d\n",child);
-			execlp(words[0],words[0],NULL);
-			return 1;
+			printf("DEFAULT: I am the parent, my pid is %d,",getpid());
+			printf("and my child is %d\n",child);
+		/* 	exit(0); */
+			/* return 1; */
 			break;
 		}
 	/* }
