@@ -14,7 +14,7 @@ void tokenize(char *line, char **words, int *nwords);
 /* break line into words separated by whitespace, placing them in the 
 array words, and setting the count to nwords */
 
-int findAndExecute(char** words);
+int findAndExecute(char** words, int nwords);
 
 int main()
 {
@@ -41,7 +41,7 @@ int main()
 			exit(0);
 		} else {
 			printf("else...");
-			findAndExecute(words);
+			findAndExecute(words,nwords);
 			
 		}
 
@@ -67,11 +67,11 @@ void tokenize(char *line, char **words, int *nwords)
 	return;
 }
 
-int findAndExecute(char** words){
+int findAndExecute(char** words, int nwords){
 	
 	pid_t child;
-	
-	//if (strcmp(words[0],"ls") == 0){
+	int status;
+	if (nwords == 1){
 		switch(child=fork())
 		{
 		case -1:
@@ -81,19 +81,18 @@ int findAndExecute(char** words){
 		case 0:
 			printf("CASE 0: I am the child my pid is: %d\n",getpid());
 			execlp(words[0],words[0],NULL);
-			
 			break;
 		default:
-			printf("DEFAULT: I am the parent, my pid is %d,",getpid());
+			printf("nwords == 1: DEFAULT: I am the parent, my pid is %d,",getpid());
 			printf("and my child is %d\n",child);
-			int status;
+			
 			wait(&status);
-		/* 	exit(0); */
+			/* exit(0); */
 			/* return 1; */
 			break;
 		}
-	/* }
-	else {
+	}
+	if (strcmp(words[0],"cd") == 0){
 		switch(child=fork())
 		{
 		case -1:
@@ -102,14 +101,16 @@ int findAndExecute(char** words){
 			break;
 		case 0:
 			printf("I am the child my pid is: %d\n",getpid());
-			return 1;
+			chdir(words[1]);
+			//return 1;
 			break;
 		default:
-			printf("I am the parent, my pid is %d,",getpid());
+			printf("first word is cd: I am the parent, my pid is %d,",getpid());
 			printf("and my childs is %d\n",child);
-			return 1;
+			wait(&status);
+			//return 1;
 			break;
 		}
-	} */
+	}
 	return 1;
 }
