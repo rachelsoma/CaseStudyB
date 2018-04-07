@@ -71,27 +71,10 @@ int findAndExecute(char** words, int nwords){
 	
 	pid_t child;
 	int status;
-	if (nwords == 1){
-		switch(child=fork())
-		{
-		case -1:
-			perror("fork");
-			exit(1);
-			break;
-		case 0:
-			printf("CASE 0: I am the child my pid is: %d\n",getpid());
-			execlp(words[0],words[0],NULL);
-			break;
-		default:
-			printf("nwords == 1: DEFAULT: I am the parent, my pid is %d,",getpid());
-			printf("and my child is %d\n",child);
-			
-			wait(&status);
-			/* exit(0); */
-			/* return 1; */
-			break;
-		}
-	}
+	char *args[2];
+	args[0] = "/usr/bin/which";
+	args[1] = words[0];
+	
 	if (strcmp(words[0],"cd") == 0){
 		switch(child=fork())
 		{
@@ -109,6 +92,27 @@ int findAndExecute(char** words, int nwords){
 			printf("and my childs is %d\n",child);
 			wait(&status);
 			//return 1;
+			break;
+		}
+	}
+	else {
+		switch(child=fork())
+		{
+		case -1:
+			perror("fork");
+			exit(1);
+			break;
+		case 0:
+			printf("CASE 0: I am the child my pid is: %d\n",getpid());
+			execlp(args[0],words[0],NULL);
+			break;
+		default:
+			printf("nwords == 1: DEFAULT: I am the parent, my pid is %d,",getpid());
+			printf("and my child is %d\n",child);
+			
+			wait(&status);
+			/* exit(0); */
+			/* return 1; */
 			break;
 		}
 	}
