@@ -27,24 +27,25 @@ int main()
 		
 		/* read a line of text here */
 		fgets(line,MAX_CHAR_LINE,stdin);
-		
+
 		//printf("%s ", line);
-		
 		tokenize(line,words,&nwords);
-		
 		
 		printf("Num words: %i \t\n",nwords);
 		/* More to do here */
 		
-		if (strcmp(words[0],"exit") == 0&&nwords==1){
+		
+		if (strcmp(words[0],"exit") == 0&&nwords==1){/* if the ONLY word entered is exit */
 			printf("exiting \n");
 			exit(0);
-		} else {
-			printf("else...");
+		} else if (strcmp(words[0],"cd") == 0){ /* if the first word is cd */
+			chdir(words[1]);
+			printf("Moved to dir %s",words[1]);
+		} 
+		else {
 			findAndExecute(words,nwords);
 			
-		}
-
+		} 
 	}
 	return 0;
 }
@@ -54,11 +55,9 @@ void tokenize(char *line, char **words, int *nwords)
 {
 	*nwords=1;
 
-
 	for(words[0]=strtok(line," \t\n");
 	(*nwords<MAX_WORDS)&&(words[*nwords]=strtok(NULL, " \t\n"));
 	*nwords=*nwords+1); 
-	
 	/* empty body */
 	
 	
@@ -75,27 +74,7 @@ int findAndExecute(char** words, int nwords){
 	args[0] = "/usr/bin/which";
 	args[1] = words[0];
 	
-	if (strcmp(words[0],"cd") == 0){
-		switch(child=fork())
-		{
-		case -1:
-			perror("fork");
-			exit(1);
-			break;
-		case 0:
-			printf("I am the child my pid is: %d\n",getpid());
-			chdir(words[1]);
-			//return 1;
-			break;
-		default:
-			printf("first word is cd: I am the parent, my pid is %d,",getpid());
-			printf("and my childs is %d\n",child);
-			wait(&status);
-			//return 1;
-			break;
-		}
-	}
-	else {
+	if(nwords == 1) {
 		switch(child=fork())
 		{
 		case -1:
@@ -104,10 +83,32 @@ int findAndExecute(char** words, int nwords){
 			break;
 		case 0:
 			printf("CASE 0: I am the child my pid is: %d\n",getpid());
-			execlp(args[0],words[0],NULL);
+			execlp(words[0],words[0],NULL);
 			break;
 		default:
-			printf("nwords == 1: DEFAULT: I am the parent, my pid is %d,",getpid());
+			printf("nwords == %d: DEFAULT: I am the parent, my pid is %d,",nwords,getpid());
+			printf("and my child is %d\n",child);
+			
+			wait(&status);
+			/* exit(0); */
+			/* return 1; */
+			break;
+		}
+	}
+	else if(nwords >= 2) {
+		 
+		switch(child=fork())
+		{
+		case -1:
+			perror("fork");
+			exit(1);
+			break;
+		case 0:
+			printf("CASE 0: I am the child my pid is: %d\n",getpid());
+			execlp(args[1],args[1],words[1],NULL);
+			break;
+		default:
+			printf("nwords == %d: DEFAULT: I am the parent, my pid is %d,",nwords,getpid());
 			printf("and my child is %d\n",child);
 			
 			wait(&status);
